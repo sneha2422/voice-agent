@@ -1,6 +1,10 @@
+Here is the fully corrected README:
+
+---
+
 # 🎙 Voice Input Interface for aider
 
-A hands-free voice interface that wraps **[aider](https://aider.chat)** — the open-source terminal AI coding agent — and lets you drive it entirely through spoken commands. Every utterance is captured from your microphone, transcribed via **OpenAI Whisper**, and sent to aider's stdin as if you had typed it.
+A hands-free voice interface that wraps **[aider](https://aider.chat)** — the open-source terminal AI coding agent — and lets you drive it entirely through spoken commands. Every utterance is captured from your microphone, transcribed via **Groq Whisper** (whisper-large-v3, free tier), and sent to aider's stdin as if you had typed it.
 
 ---
 
@@ -19,13 +23,13 @@ A hands-free voice interface that wraps **[aider](https://aider.chat)** — the 
      │ sounddevice  │      │ subprocess.Popen │
      │ (mic capture)│      │ (aider --stdin)  │
      │     +        │      └──────────────────┘
-     │ Whisper API  │
+     │ Groq Whisper │
      └──────────────┘
 ```
 
 | Component | File | Responsibility |
 |---|---|---|
-| `voice_input.py`  | `src/` | Mic capture (PTT & VAD), WAV export, Whisper API call |
+| `voice_input.py`  | `src/` | Mic capture (PTT & VAD), WAV export, Groq Whisper API call |
 | `agent_bridge.py` | `src/` | Launch aider as a subprocess, pipe text to its stdin |
 | `voice_agent.py`  | `src/` | Orchestration loop, voice-command substitution, CLI |
 
@@ -35,9 +39,9 @@ A hands-free voice interface that wraps **[aider](https://aider.chat)** — the 
 
 | Requirement | Notes |
 |---|---|
-| Python 3.9 + | Tested on 3.9, 3.10, 3.11 |
+| Python 3.9 + | Tested on 3.12 |
 | PortAudio | Required by `sounddevice` (see below) |
-| OpenAI API key | For Whisper transcription **and** aider's LLM |
+| GROQ_API_KEY | Free — get one at https://console.groq.com |
 | Git repository | aider must be run inside a git repo |
 
 ### Install PortAudio
@@ -63,24 +67,24 @@ cd voice-agent
 
 # 2. Create and activate a virtual environment
 python -m venv .venv
-source .venv/bin/activate      # Windows: .venv\Scripts\activate
+source .venv/bin/activate      # Windows: .venv\Scripts\Activate.ps1
 
 # 3. Install Python dependencies
 pip install -r requirements.txt
 ```
 
-> **Cost note:** Whisper API pricing is **$0.006 / minute** of audio. A typical coding session of 30 short utterances (~10 s each) costs ~$0.03. aider itself uses the LLM you configure (GPT-4o by default); costs depend on your usage.
+> **Cost note:** Groq Whisper API is **completely free** on the free tier. No credit card required.
 
 ---
 
 ## Configuration
 
-Export your API key before running:
+Export your Groq API key before running:
 
 ```bash
-export OPENAI_API_KEY="sk-..."        # macOS / Linux
-set OPENAI_API_KEY=sk-...             # Windows cmd
-$env:OPENAI_API_KEY="sk-..."          # Windows PowerShell
+export GROQ_API_KEY="gsk-..."        # macOS / Linux
+set GROQ_API_KEY=gsk-...             # Windows cmd
+$env:GROQ_API_KEY="gsk-..."          # Windows PowerShell
 ```
 
 aider also reads `ANTHROPIC_API_KEY` if you want to use a Claude model.
@@ -130,7 +134,7 @@ python src/voice_agent.py --mode continuous \
 # Open files, no git commits:
 python src/voice_agent.py --files app.py utils.py --no-auto-commits
 
-# Test microphone + Whisper without aider:
+# Test microphone + Groq Whisper without aider:
 python src/voice_agent.py --dry-run
 
 # Test Whisper module standalone:
@@ -164,7 +168,7 @@ These spoken phrases are mapped to aider slash commands before sending:
 pytest tests/ -v
 ```
 
-No API key is required; all network calls are mocked.
+No API key is required — all network calls are mocked.
 
 ---
 
@@ -173,7 +177,7 @@ No API key is required; all network calls are mocked.
 **~2 minutes** from a clean environment with dependencies already installed.
 
 Steps:
-1. `export OPENAI_API_KEY=...` (30 s)
+1. `$env:GROQ_API_KEY="gsk-..."` (30 s)
 2. `cd` into any git repo (5 s)
 3. `python src/voice_agent.py` (30 s to start aider)
 4. Hold Space → speak → release (live demo)
@@ -198,7 +202,7 @@ Dependencies and their licenses:
 | Package | License |
 |---|---|
 | aider-chat | Apache 2.0 |
-| openai | MIT |
+| groq | MIT |
 | sounddevice | MIT |
 | numpy | BSD-3 |
 | pynput | LGPL-3.0 |
