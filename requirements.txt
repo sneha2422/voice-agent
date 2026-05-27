@@ -1,0 +1,13 @@
+# ── core runtime ──────────────────────────────────────────────────────────────
+groq>=0.9.0             # Free Whisper API (whisper-large-v3)
+aider-chat>=0.50.0      # terminal coding agent
+
+# ── audio capture ─────────────────────────────────────────────────────────────
+sounddevice>=0.4.6
+numpy>=1.24.0
+
+# ── keyboard listener (push-to-talk) ─────────────────────────────────────────
+pynput>=1.7.6
+
+# ── testing ───────────────────────────────────────────────────────────────────
+pytest>=7.4.0
